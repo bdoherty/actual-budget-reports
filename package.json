@@ -1,0 +1,24 @@
+{
+  "name": "actual-budget-reports",
+  "description": "A tool for running reports against Actual",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bdoherty/actual-budget-reports.git"
+  },
+  "author": "Brendan Doherty",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bdoherty/actual-budget-reports/issues"
+  },
+  "bin": {
+    "actual-budget-reports": "./index.js"
+  },
+  "homepage": "https://github.com/bdoherty/actual-budget-reports",
+  "dependencies": {
+    "@actual-app/api": "^1.1.3",
+    "colors": "^1.4.0",
+    "date-fns": "^2.25.0"
+  }
+}
