@@ -85,7 +85,7 @@ async function export_groups(is_income, months, net_income) {
         let output_group = false;
         let group_totals = [];
         for(let c = 0; c < categories.length; c++) {
-            let line = `- ${categories[c].name}`;
+            let line = `"- ${categories[c].name}"`;
             let line_total = 0;
             let output_category = false;
             
@@ -124,7 +124,7 @@ async function export_groups(is_income, months, net_income) {
                 group_total += group_totals[t];
                 group_total_line += `${Number(group_totals[t]).toFixed(2)}, `
             }
-            console.log(`Total ${category_groups[g].name}, ${group_total_line}${Number(group_total).toFixed(2)}`);
+            console.log(`"Total ${category_groups[g].name}", ${group_total_line}${Number(group_total).toFixed(2)}`);
             console.log();    
         }
     }
