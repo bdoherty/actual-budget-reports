@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const actual = require('@actual-app/api');
 const query = require('@actual-app/api/query');
 const colors = require('colors/safe');
