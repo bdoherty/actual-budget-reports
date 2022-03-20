@@ -42,7 +42,7 @@ async function ive_report() {
 
     console.log('Income and Expenses');
     console.log();
-    console.log(`, ${months.join(', ')}`);
+    console.log(`, ${months.join(', ')},Total`);
     let net_income = [];
 
     await export_groups(true, months, net_income);
