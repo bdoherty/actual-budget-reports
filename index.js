@@ -70,6 +70,10 @@ async function export_groups(is_income, months, net_income) {
         .select(['id', 'name'])
     )).data;
 
+    if(is_income && category_groups.length > 1) {
+        throw `Did not expect ${category_groups.length} income groups.  Please report to developer.`
+    }
+
     for(let g = 0; g < category_groups.length; g++) {
         let categories = (await actual.runQuery( 
             query('categories')
