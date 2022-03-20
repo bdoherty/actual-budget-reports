@@ -42,7 +42,7 @@ async function ive_report() {
 
     console.log('Income and Expenses');
     console.log();
-    console.log(`, ${months.join(', ')},Total`);
+    console.log(`, ${months.join(', ')}, Total, Average`);
     let net_income = [];
 
     await export_groups(true, months, net_income);
@@ -56,7 +56,7 @@ async function ive_report() {
         total_net_income += net_income[t];
         net_income_line += `${Number(net_income[t]).toFixed(2)}, `
     }
-    console.log(`Net Income, ${net_income_line}${Number(total_net_income).toFixed(2)}`);
+    console.log(`Net Income, ${net_income_line}${Number(total_net_income).toFixed(2)}, ${Number(total_net_income/months.length).toFixed(2)}`);
 }
 
 async function export_groups(is_income, months, net_income) {
@@ -114,7 +114,7 @@ async function export_groups(is_income, months, net_income) {
                 }
             }
             if(output_category) {
-                console.log(`${line},${Number(line_total).toFixed(2)}`);
+                console.log(`${line}, ${Number(line_total).toFixed(2)}, ${Number(line_total/months.length).toFixed(2)}`);
             }
         }
         if(output_group) {
@@ -124,7 +124,7 @@ async function export_groups(is_income, months, net_income) {
                 group_total += group_totals[t];
                 group_total_line += `${Number(group_totals[t]).toFixed(2)}, `
             }
-            console.log(`"Total ${category_groups[g].name}", ${group_total_line}${Number(group_total).toFixed(2)}`);
+            console.log(`"Total ${category_groups[g].name}", ${group_total_line}${Number(group_total).toFixed(2)}, ${Number(group_total/months.length).toFixed(2)}`);
             console.log();    
         }
     }
@@ -137,7 +137,7 @@ async function export_groups(is_income, months, net_income) {
             total_expenses_line += `${Number(totals[t]).toFixed(2)}, `
         }
 
-        console.log(`Total Expenses, ${total_expenses_line}${Number(total_expenses).toFixed(2)}`)
+        console.log(`Total Expenses, ${total_expenses_line}${Number(total_expenses).toFixed(2)}, ${Number(total_expenses/months.length).toFixed(2)}`)
         console.log();
     }
 }
