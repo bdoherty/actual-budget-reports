@@ -154,6 +154,5 @@ async function getMonths() {
     let this_month = d.format(new Date(), 'yyyy-MM');
     let to_month_index = months.indexOf(this_month);
     months = months.slice(from_month_index, to_month_index);
-    console.log(months);
     return months;
 }
