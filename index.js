@@ -7,7 +7,7 @@ const d = require('date-fns');
 
 let budget_id = process.argv[2];
 let report_name = process.argv[3];
-let from_month = process.argv[4];
+
 
 if(!budget_id) {
     console.error(colors.red('Missing budget-id parameter.\n'));
@@ -16,11 +16,18 @@ if(!budget_id) {
 }
 
 function usage() {
-    console.error('Usage: actual-budget-reports <budget-id> <report-name> [from-month]\n');
+    console.error('Usage: actual-budget-reports <budget-id> <report-name> [report-params]\n');
     console.error('Parameters:')
     console.error('  budget-id: Your budget id in the "Advanced" section of the settings page.')
-    console.error('  report-name: The name of the report. Options: ive, payee.')
+    console.error('  report-name: The name of the report. Options: ive, reimbursements.')
+    console.error('')
+    console.error('Report Specific Parameters');
+    console.error(' ive : [from-month]')
     console.error('  from-month: The first month to start the report from in yyyy-mm format.')
+    console.error(' reimbursements')
+    console.error('  group-name: The name of the category group that contains reimbursement categories.')
+
+
 }
 
 actual.runWithBudget(process.argv[2], run);
@@ -29,6 +36,9 @@ async function run() {
     switch(report_name) {
         case 'ive':
             await ive_report();
+            break;
+        case 'reimbursements':
+            await reimbursements_report();
             break;
         default: 
             console.error(colors.red('Invalid report parameter.\n'));
@@ -143,6 +153,7 @@ async function export_groups(is_income, months, net_income) {
 }
 
 async function getMonths() {
+    let from_month = process.argv[4];
     let months = await actual.getBudgetMonths();
     let from_month_index = 0;
     if(from_month) {
@@ -155,4 +166,44 @@ async function getMonths() {
     let to_month_index = months.indexOf(this_month);
     months = months.slice(from_month_index, to_month_index);
     return months;
+}
+
+async function reimbursements_report() {
+
+
+    let group_name = process.argv.slice(4).join(' ');
+
+    console.log(group_name)
+ 
+    let categories = (await actual.runQuery( 
+        query('categories')
+        .filter({ 'group.name': { $eq: group_name } })
+        .orderBy(['sort_order'])
+        .select(['id', 'name'])
+    )).data;
+
+    for(let c = 0; c < categories.length; c++) {
+
+        console.log();
+        console.log(categories[c].name)
+        console.log()
+        console.log('Date, Account, Payee, Notes, Amount, Running Balance')
+
+        let transactions = (await actual.runQuery( 
+            await query('transactions')
+                .filter({ 'category.id': { $eq: categories[c].id } })
+                .orderBy('date')
+                .select(['date', 'account.name', 'payee.name', 'notes', 'amount'])
+        )).data;
+
+        let running_balance = 0;
+        for(let t = 0; t < transactions.length; t++) {
+            running_balance += (transactions[t].amount/100);
+            console.log(`${transactions[t].date}, "${transactions[t]['account.name']}", "${transactions[t]['payee.name']}", "${transactions[t].notes || ''}", ${Number(transactions[t].amount/100).toFixed(2)}, ${Number(running_balance).toFixed(2)}`)
+        }
+        
+    }
+
+
+
 }
