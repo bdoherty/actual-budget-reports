@@ -3,15 +3,26 @@ Command line utility for running reports against [ActualBudget](https://actualbu
 
 ## Usage
 ```
-npx bdoherty/actual-budget-reports <budget-id> <report-name> [from-month] > report.csv
+npx bdoherty/actual-budget-reports <budget-id> <report-name> [from-month] [to-month] > report.csv
 actual-budget-reports <budget-id> <report-name> [from-month] > report.csv
 ```
 * **budget-id** You can find your budget id in the "Advanced" section of the settings page. 
 * **report-name** The only supported option at the moment is ive (Income vs Expenses).
-* **month** The first month to start the report from in yyyy-mm format.  Optional. 
+* **from-month** The first month to start the report from in yyyy-mm format.  Optional. 
+* **to-month** The last month to include in report in yyyy-mm format.  Optional. 
 
 This utility uses the [Actual API](https://actualbudget.com/docs/developers/using-the-API/). Currently, the API requires Actual must be running locally before you can run the report.    To save the output to a file, you need to make sure that the end of your command has a greater than symbol (>) followed by a filename.
 
+## Examples
+```
+npx bdoherty/actual-budget-reports My-Budget-Id > report.csv
+```
+```
+npx bdoherty/actual-budget-reports My-Budget-Id 2020-04 > report.csv
+```
+```
+npx bdoherty/actual-budget-reports My-Budget-Id 2020-04 2021-03 > report.csv
+```
 ## Prerequisites
 * Actual
 * Node
@@ -21,7 +32,7 @@ This utility uses the [Actual API](https://actualbudget.com/docs/developers/usin
 You can run this utility without installing it by running the following command.  This about 20 seconds slower to run, as it downloads the software each time.  As a benefit, you will always be using the latest version.
 
 ```
-npx bdoherty/actual-budget-reports <budget-id> <report-name> [from-month]
+npx bdoherty/actual-budget-reports <budget-id> <report-name> [from-month] [to-month]
 ```
 
 Alternatively you can create a new folder, and then run the following command within that folder from command prompt (on Windows) or Terminal (on Mac) to install the utility.  The utility will run faster, as it doesn't need to download the software each time it runs.
