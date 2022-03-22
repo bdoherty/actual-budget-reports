@@ -22,8 +22,9 @@ function usage() {
     console.error('  report-name: The name of the report. Options: ive, reimbursements.')
     console.error('')
     console.error('Report Specific Parameters');
-    console.error(' ive : [from-month]')
-    console.error('  from-month: The first month to start the report from in yyyy-mm format.')
+    console.error(' ive : [from-month] [to-month]')
+    console.error('  from-month: The first month to start the report from in yyyy-mm format. Optional')
+    console.error('  to-month: The last month of the report from in yyyy-mm format. Optional')
     console.error(' reimbursements')
     console.error('  group-name: The name of the category group that contains reimbursement categories.')
 
@@ -48,11 +49,11 @@ async function run() {
 }
 
 async function ive_report() {
-    let months = await getMonths();
+    let months = await ive_getMonths();
 
     console.log('Income and Expenses');
     console.log();
-    console.log(`, ${months.join(', ')}, Total, Average`);
+    console.log(`,, ${months.join(', ')}, Total, Average`);
     let net_income = [];
 
     await export_groups(true, months, net_income);
@@ -66,7 +67,7 @@ async function ive_report() {
         total_net_income += net_income[t];
         net_income_line += `${Number(net_income[t]).toFixed(2)}, `
     }
-    console.log(`Net Income, ${net_income_line}${Number(total_net_income).toFixed(2)}, ${Number(total_net_income/months.length).toFixed(2)}`);
+    console.log(`Net Income,, ${net_income_line}${Number(total_net_income).toFixed(2)}, ${Number(total_net_income/months.length).toFixed(2)}`);
 }
 
 async function export_groups(is_income, months, net_income) {
@@ -95,7 +96,7 @@ async function export_groups(is_income, months, net_income) {
         let output_group = false;
         let group_totals = [];
         for(let c = 0; c < categories.length; c++) {
-            let line = `"- ${categories[c].name}"`;
+            let line = `,"${categories[c].name}"`;
             let line_total = 0;
             let output_category = false;
             
@@ -134,7 +135,7 @@ async function export_groups(is_income, months, net_income) {
                 group_total += group_totals[t];
                 group_total_line += `${Number(group_totals[t]).toFixed(2)}, `
             }
-            console.log(`"Total ${category_groups[g].name}", ${group_total_line}${Number(group_total).toFixed(2)}, ${Number(group_total/months.length).toFixed(2)}`);
+            console.log(`"Total ${category_groups[g].name}",, ${group_total_line}${Number(group_total).toFixed(2)}, ${Number(group_total/months.length).toFixed(2)}`);
             console.log();    
         }
     }
@@ -147,14 +148,16 @@ async function export_groups(is_income, months, net_income) {
             total_expenses_line += `${Number(totals[t]).toFixed(2)}, `
         }
 
-        console.log(`Total Expenses, ${total_expenses_line}${Number(total_expenses).toFixed(2)}, ${Number(total_expenses/months.length).toFixed(2)}`)
+        console.log(`Total Expenses,, ${total_expenses_line}${Number(total_expenses).toFixed(2)}, ${Number(total_expenses/months.length).toFixed(2)}`)
         console.log();
     }
 }
 
-async function getMonths() {
-    let from_month = process.argv[4];
+async function ive_getMonths() {
+
     let months = await actual.getBudgetMonths();
+
+    let from_month = process.argv[4];
     let from_month_index = 0;
     if(from_month) {
         let pos = months.indexOf(from_month);
@@ -162,9 +165,18 @@ async function getMonths() {
             from_month_index = pos;
         }
     }
-    let this_month = d.format(new Date(), 'yyyy-MM');
-    let to_month_index = months.indexOf(this_month);
-    months = months.slice(from_month_index, to_month_index);
+    let to_month = process.argv[5];
+    let to_month_index;
+    if(to_month) {
+        let pos = months.indexOf(to_month);
+        if(pos != -1) {
+            to_month_index = pos;
+        }
+    } else {
+        let this_month = d.format(new Date(), 'yyyy-MM');
+        to_month_index = months.indexOf(this_month)
+    }
+    months = months.slice(from_month_index, to_month_index + 1);
     return months;
 }
 
