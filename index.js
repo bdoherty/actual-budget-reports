@@ -85,6 +85,10 @@ async function export_groups(is_income, months, net_income) {
         throw `Did not expect ${category_groups.length} income groups.  Please report to developer.`
     }
 
+    const ymd = /^\d\d\d\d\-\d\d\-\d\d$/;
+    let has_from_date = ymd.test(process.argv[4]);
+    let has_to_date = ymd.test(process.argv[5]);
+
     for(let g = 0; g < category_groups.length; g++) {
         let categories = (await actual.runQuery( 
             query('categories')
@@ -103,12 +107,20 @@ async function export_groups(is_income, months, net_income) {
             let category_totals = []
             for(let m = 0; m < months.length; m++) {
 
+                let filters = [ 
+                    { date: { $transform: '$month', $eq: months[m] } },
+                    { 'category.id': { $eq: categories[c].id } }
+                ]
+                if(has_from_date) {
+                    filters.push({ date: { $gte: process.argv[4] } });
+                }
+                if(has_to_date) {
+                    filters.push({ date: { $lte: process.argv[5] } });
+                }
+
                 let amount = ((await actual.runQuery( 
                     await query('transactions')
-                        .filter({ '$and': [ 
-                            { date: { $transform: '$month', $eq: months[m] } },
-                            { 'category.id': { $eq: categories[c].id } }
-                        ]})
+                        .filter({ '$and': filters })
                         .calculate({ '$sum': '$amount' })
                 )).data / 100);
                 group_totals[m] = (group_totals[m] || 0) + amount;
@@ -156,8 +168,9 @@ async function export_groups(is_income, months, net_income) {
 async function ive_getMonths() {
 
     let months = await actual.getBudgetMonths();
-
-    let from_month = process.argv[4];
+    
+    const ym = /\d\d\d\d\-\d\d/;
+    let from_month =  ym.test(process.argv[4]) ? ym.exec(process.argv[4])[0] : null;
     let from_month_index = 0;
     if(from_month) {
         let pos = months.indexOf(from_month);
@@ -165,7 +178,7 @@ async function ive_getMonths() {
             from_month_index = pos;
         }
     }
-    let to_month = process.argv[5];
+    let to_month = ym.test(process.argv[5]) ? ym.exec(process.argv[5])[0] : null;
     let to_month_index;
     if(to_month) {
         let pos = months.indexOf(to_month);
