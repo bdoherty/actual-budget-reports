@@ -3,13 +3,21 @@ Command line utility for running reports against [ActualBudget](https://actualbu
 
 ## Usage
 ```
-npx bdoherty/actual-budget-reports <budget-id> <report-name> [from-month] [to-month] > report.csv
-actual-budget-reports <budget-id> <report-name> [from-month] > report.csv
+npx bdoherty/actual-budget-reports <budget-id> <report-name> [report-params...] > report.csv
+npx bdoherty/actual-budget-reports <budget-id> ive [from-month] [to-month] > report.csv
+npx bdoherty/actual-budget-reports <budget-id> ive [from-month] [to-month] > report.csv
+actual-budget-reports <budget-id> ive [from-month] [to-month] > report.csv
+actual-budget-reports <budget-id> reimbursements <group-name> > report.csv
 ```
 * **budget-id** You can find your budget id in the "Advanced" section of the settings page. 
-* **report-name** The only supported option at the moment is ive (Income vs Expenses).
+* **report-name** Either ```ive``` (Income vs Expenses), or ```reimbursements```
+
+### Report Specific Parameters
+#### Income and Expenses
 * **from-month** The first month to start the report from in yyyy-mm format.  Optional. You can also specify a date in yyyy-mm-dd format to start part way through a month.
 * **to-month** The last month to include in report in yyyy-mm format.  Optional. You can also specify a date in yyyy-mm-dd format to end part way through a month.
+#### Reimbursements
+* **group-name**: The name of the category group that contains reimbursement categories.
 
 This utility uses the [Actual API](https://actualbudget.com/docs/developers/using-the-API/). Currently, the API requires Actual must be running locally before you can run the report.    To save the output to a file, you need to make sure that the end of your command has a greater than symbol (>) followed by a filename.
 
